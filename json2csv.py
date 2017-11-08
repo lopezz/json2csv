@@ -10,18 +10,20 @@ def json2csv():
     '''
     no docstring
     '''
-    columns = ['shortname', 'name', 'unicode', 'unicode_encoded', 'aliases']
+    header = ['index', 'shortname', 'name', 'unicode', 'unicode_encoded', 'aliases', 'image']
+    columns = ['shortname', 'name', 'unicode']
     with open('emojione.json', 'r') as j:
         j_data = j.read()
         emojis = json.loads(j_data)
-    print(type(emojis))
     with open('emojis.csv', 'w') as output:
         emojis_csv = csv.writer(output, delimiter=',', lineterminator='\n',
-                        quotechar='"', quoting=csv.QUOTE_ALL)
-        emojis_csv.writerow(columns)
-        for i in emojis:
-            row = [emojis[i][x] for x in columns if x not in ('unicode_encoded','aliases')]
-            unicodes = emojis[i]['unicode'].split('-')
+                                quotechar='"', quoting=csv.QUOTE_ALL)
+        emojis_csv.writerow(header)
+        for i, ele in enumerate(emojis):
+            row = [str(i+1)]
+            row += [emojis[ele][x] for x in columns
+                    if x not in ('unicode_encoded', 'aliases', 'image')]
+            unicodes = emojis[ele]['unicode'].split('-')
             # print(unicodes)
             unicode_encoded = []
             for code in unicodes:
@@ -29,11 +31,9 @@ def json2csv():
                 unicode_encoded.append(str(bytes('\\U'+zeros + code, 'utf-8'), 'unicode-escape'))
             # print(unicode_encoded)
             row.append(' '.join(unicode_encoded))
-            row.append(' '.join(emojis[i]['aliases']))
+            row.append(' '.join(emojis[ele]['aliases']))
+            row.append('!https://cdn.jsdelivr.net/emojione/assets/png/%s.png?v=2.2.7!'
+                       % emojis[ele]['unicode'])
             emojis_csv.writerow(row)
-            #output.write(','.join(row)+'\n')
 
 json2csv()
-
-
-# with open('emojis.csv', 'w') as f
