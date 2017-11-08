@@ -5,6 +5,7 @@ json attributes
 
 import json
 import csv
+
 from collections import OrderedDict
 
 def json2csv():
@@ -14,8 +15,7 @@ def json2csv():
     header = ['index', 'shortname', 'name', 'unicode', 'unicode_encoded', 'aliases', 'image']
     columns = ['shortname', 'name', 'unicode']
     with open('emojione.json', 'r') as j:
-        j_data = j.read()
-        emojis = json.loads(j_data, object_pairs_hook=OrderedDict)
+        emojis = json.load(j, object_pairs_hook=OrderedDict)
     with open('emojis.csv', 'w') as output:
         emojis_csv = csv.writer(output, delimiter=',', lineterminator='\n',
                                 quotechar='"', quoting=csv.QUOTE_ALL)
@@ -29,7 +29,8 @@ def json2csv():
             unicode_encoded = []
             for code in unicodes:
                 zeros = '0' * (8 - len(code))
-                unicode_encoded.append(str(bytes('\\U'+zeros + code, 'utf-8'), 'unicode-escape'))
+                unicode_str = '\\U'+zeros+code
+                unicode_encoded.append(str(unicode_str.encode(), 'unicode-escape'))
             # print(unicode_encoded)
             row.append(' '.join(unicode_encoded))
             row.append(' '.join(emojis[ele]['aliases']))
